@@ -3,7 +3,7 @@ import { socket } from '../socket';
 
 const ANIMAL_ICONS = [
     "🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯",
-    "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🐧", "🐦", "🐤", "🦆"
+    "🦁", "🐮", "🐷", "🐴", "🐵", "🐔", "🐧", "🐦", "🐤", "🦆"
 ];
 
 export function Lobby({ onJoin, roomId, onRoomIdChange }) {
