@@ -221,6 +221,7 @@ button.btn-primary:disabled {
    ============================================ */
 .game-room {
   height: 100dvh;
+  height: -webkit-fill-available;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -1104,7 +1105,7 @@ button.btn-primary:disabled {
    ============================================ */
 @media (max-width: 768px) {
   .game-header-new {
-    padding: 0.25rem 0.4rem;
+    padding: 0.15rem 0.4rem;
   }
 
   .btn-back,
@@ -1148,8 +1149,9 @@ button.btn-primary:disabled {
   }
 
   .player-list-side h3 {
-    font-size: 0.62rem;
-    margin-bottom: 0.15rem;
+    font-size: 0.6rem;
+    margin-bottom: 0.1rem;
+    padding-bottom: 0.1rem;
   }
 
   .player-list-vertical {
@@ -1226,8 +1228,8 @@ button.btn-primary:disabled {
   }
 
   .game-footer {
-    padding: 0.35rem;
-    border-top-width: 3px;
+    padding: 0.25rem 0.5rem calc(0.2rem + env(safe-area-inset-bottom));
+    border-top-width: 2px;
   }
 }
 
