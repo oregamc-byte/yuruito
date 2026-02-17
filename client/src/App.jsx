@@ -21,19 +21,68 @@ function App() {
       setRoomId(newRoomId);
     }
 
-    function onDisconnect() {
-      setIsJoined(false);
+    // Try auto-reconnect from saved session
+    const savedRoomId = localStorage.getItem('ito_roomId');
+    const savedName = localStorage.getItem('ito_username');
+    const savedIcon = localStorage.getItem('ito_icon');
+    const savedSession = localStorage.getItem('ito_session_active');
+    const currentRoomId = urlRoomId || roomId;
+
+    if (savedSession && savedName && savedRoomId && savedRoomId === (urlRoomId || '')) {
+      // Auto-reconnect
+      socket.auth = { username: savedName, icon: savedIcon };
+      socket.connect();
+      socket.emit('join_room', {
+        roomId: savedRoomId,
+        username: savedName,
+        icon: savedIcon,
+        reconnect: true
+      });
+      setIsJoined(true);
+    }
+
+    // Handle disconnect: DON'T go back to lobby, let reconnection happen
+    function onDisconnect(reason) {
+      console.log('Disconnected:', reason);
+      // Only go back to lobby if manually disconnected or server shutdown
+      if (reason === 'io server disconnect' || reason === 'io client disconnect') {
+        setIsJoined(false);
+        localStorage.removeItem('ito_session_active');
+      }
+      // For other reasons (transport close, ping timeout), socket.io will auto-reconnect
+    }
+
+    function onReconnect() {
+      console.log('Reconnected!');
+      const rId = localStorage.getItem('ito_roomId');
+      const uName = localStorage.getItem('ito_username');
+      const uIcon = localStorage.getItem('ito_icon');
+      if (rId && uName) {
+        socket.emit('join_room', {
+          roomId: rId,
+          username: uName,
+          icon: uIcon,
+          reconnect: true
+        });
+        setIsJoined(true);
+      }
     }
 
     socket.on('disconnect', onDisconnect);
+    socket.io.on('reconnect', onReconnect);
 
     return () => {
       socket.off('disconnect', onDisconnect);
+      socket.io.off('reconnect', onReconnect);
     };
   }, []);
 
   const handleJoin = (joined) => {
     setIsJoined(joined);
+    if (joined) {
+      localStorage.setItem('ito_session_active', 'true');
+      localStorage.setItem('ito_roomId', roomId);
+    }
   };
 
   return (

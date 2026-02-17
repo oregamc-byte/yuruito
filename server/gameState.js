@@ -10,22 +10,29 @@ const shuffle = (array) => {
     return array;
 };
 
-const INITIAL_HAND_SIZE = 1; // Start with 1 card usually, or configurable
+const INITIAL_HAND_SIZE = 1;
 
 const initGame = (roomState) => {
     roomState.deck = shuffle(generateDeck());
     roomState.table = [];
-    roomState.phase = 'playing';
+    roomState.phase = 'playing'; // Card viewing phase
+    roomState.comments = []; // Will hold { playerId, playerName, icon, comment }
+    roomState.rankings = {}; // { playerId: { comment1PlayerId: rank, ... } }
+    roomState.revealOrder = []; // Order of card reveals
 
     // Deal cards
     roomState.players.forEach(player => {
         player.hand = [];
+        player.comment = '';
+        player.commentSubmitted = false;
+        player.rankingSubmitted = false;
+        player.cardRevealed = false;
         for (let i = 0; i < INITIAL_HAND_SIZE; i++) {
             if (roomState.deck.length > 0) {
                 player.hand.push(roomState.deck.pop());
             }
         }
-        player.hand.sort((a, b) => a - b); // Keep hand sorted for convenience
+        player.hand.sort((a, b) => a - b);
     });
 
     return roomState;
