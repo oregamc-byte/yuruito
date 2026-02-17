@@ -336,6 +336,28 @@ io.on('connection', (socket) => {
         }
     });
 
+    // Kick Player (Host only)
+    socket.on('kick_player', ({ roomId, playerId }) => {
+        const room = rooms[roomId];
+        if (!room) return;
+
+        const sender = room.players.find(p => p.id === socket.id);
+        if (!sender || !sender.isHost) return;
+
+        const targetIdx = room.players.findIndex(p => p.id === playerId);
+        if (targetIdx !== -1) {
+            const targetPlayer = room.players[targetIdx];
+            // Notify the target player
+            io.to(playerId).emit('kicked');
+
+            // Remove the player
+            room.players.splice(targetIdx, 1);
+            console.log(`Player ${targetPlayer.username} was kicked from room ${roomId} by host`);
+
+            broadcastGameState(roomId);
+        }
+    });
+
     // Restart Game
     socket.on('restart_game', ({ roomId }) => {
         if (rooms[roomId]) {

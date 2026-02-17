@@ -21,7 +21,14 @@ export function GameRoom({ roomId }) {
             const me = state.players.find(p => p.id === socket.id);
             if (me) setMyHand(me.hand);
         });
-        return () => socket.off('update_gamestate');
+        socket.on('kicked', () => {
+            alert('管理者によって退出させられました。');
+            goHome();
+        });
+        return () => {
+            socket.off('update_gamestate');
+            socket.off('kicked');
+        };
     }, []);
 
     const startGame = () => socket.emit('start_game', { roomId });
@@ -46,6 +53,11 @@ export function GameRoom({ roomId }) {
     const updateIcon = (icon) => {
         socket.emit('update_icon', { roomId, icon });
         setShowIconSelector(false);
+    };
+    const kickPlayer = (playerId) => {
+        if (window.confirm('このプレイヤーを退出させますか？')) {
+            socket.emit('kick_player', { roomId, playerId });
+        }
     };
 
     const copyUrl = () => {
@@ -355,6 +367,15 @@ export function GameRoom({ roomId }) {
                                         <div className="p-status">{p.cardRevealed ? '✅' : '🃏'}</div>
                                     )}
                                 </div>
+                                {me.isHost && p.id !== socket.id && (
+                                    <button
+                                        className="btn-kick"
+                                        onClick={() => kickPlayer(p.id)}
+                                        title="この人を退出させる"
+                                    >
+                                        ❌
+                                    </button>
+                                )}
                             </div>
                         ))}
                     </div>
