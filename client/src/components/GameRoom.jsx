@@ -377,6 +377,7 @@ export function GameRoom({ roomId }) {
                 {phase === 'result' && me.isHost && (
                     <button className="btn-primary footer-btn" onClick={restartGame}>もう一度遊ぶ 🔄</button>
                 )}
+                <div className="footer-room-id">🏠 ルームID: {roomId}</div>
             </footer>
         </div>
     );

@@ -6,7 +6,7 @@ const ANIMAL_ICONS = [
     "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🐧", "🐦", "🐤", "🦆"
 ];
 
-export function Lobby({ onJoin, roomId }) {
+export function Lobby({ onJoin, roomId, onRoomIdChange }) {
     const [username, setUsername] = useState('');
     const [selectedIcon, setSelectedIcon] = useState(ANIMAL_ICONS[0]);
 
@@ -17,9 +17,14 @@ export function Lobby({ onJoin, roomId }) {
         if (savedIcon && ANIMAL_ICONS.includes(savedIcon)) setSelectedIcon(savedIcon);
     }, []);
 
+    const handleRoomIdInput = (e) => {
+        const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+        onRoomIdChange(val);
+    };
+
     const handleJoin = (e) => {
         e.preventDefault();
-        if (username.trim()) {
+        if (username.trim() && roomId && roomId.length === 4) {
             localStorage.setItem('ito_username', username);
             localStorage.setItem('ito_icon', selectedIcon);
 
@@ -34,9 +39,21 @@ export function Lobby({ onJoin, roomId }) {
         <div className="lobby-container">
             <div className="lobby-card">
                 <h1>ito Online</h1>
-                <div className="room-info">ルーム: {roomId}</div>
 
                 <form onSubmit={handleJoin} className="join-form">
+                    <div className="input-group">
+                        <label>ルームナンバー (4桁)</label>
+                        <input
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            placeholder="例: 1234"
+                            value={roomId || ''}
+                            onChange={handleRoomIdInput}
+                            className="room-input"
+                            required
+                        />
+                    </div>
                     <div className="input-group">
                         <label>ニックネーム</label>
                         <input
@@ -65,7 +82,7 @@ export function Lobby({ onJoin, roomId }) {
                         </div>
                     </div>
 
-                    <button type="submit" className="btn-primary">参加する</button>
+                    <button type="submit" className="btn-primary" disabled={!roomId || roomId.length !== 4}>参加する</button>
                 </form>
             </div>
         </div>

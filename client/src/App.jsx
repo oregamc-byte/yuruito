@@ -77,6 +77,12 @@ function App() {
     };
   }, []);
 
+  const handleRoomIdChange = (newId) => {
+    setRoomId(newId);
+    const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?room=' + newId;
+    window.history.replaceState({ path: newUrl }, '', newUrl);
+  };
+
   const handleJoin = (joined) => {
     setIsJoined(joined);
     if (joined) {
@@ -88,7 +94,7 @@ function App() {
   return (
     <div className="App">
       {!isJoined ? (
-        <Lobby onJoin={handleJoin} roomId={roomId} />
+        <Lobby onJoin={handleJoin} roomId={roomId} onRoomIdChange={handleRoomIdChange} />
       ) : (
         <GameRoom roomId={roomId} />
       )}
